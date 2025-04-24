@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { onAuthStateChanged } from 'firebase/auth'; // Firebase Authentication
-import { auth } from './firebaseConfig'; // Assuming you have firebaseConfig.js set up
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebaseConfig';
 
-// Importing components for different pages
 import Intro from './pages/Intro';
 import Auth from './pages/Auth';
 import Login from './pages/Login';
@@ -15,65 +14,62 @@ import Home from './pages/Home';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
 
-  // Listen for authentication state change
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('bg-dark', 'text-light');
+    } else {
+      document.body.classList.remove('bg-dark', 'text-light');
+    }
+  }, [darkMode]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user); // Set user if logged in
-      } else {
-        setUser(null); // Reset user if logged out
-      }
+      setUser(user || null);
     });
     return () => unsubscribe();
   }, []);
 
-  return (
-    <>
-      <Router>
-        <div>
-          <nav>
-            <ul>
-              {!user ? (
-                <>
-                  <li>
-                    <Link to="/">Intro</Link>
-                  </li>
-                  <li>
-                    <Link to="/login">Login</Link>
-                  </li>
-                  <li>
-                    <Link to="/register">Register</Link>
-                  </li>
-                </>
-              ) : (
-                <li>
-                  <Link to="/home">Home</Link>
-                </li>
-              )}
-            </ul>
-          </nav>
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+  };
 
+  return (
+    <Router>
+      <div className={`min-vh-100 ${darkMode ? 'bg-dark text-light' : 'bg-light text-dark'}`}>
+        <div className="container py-3">
+          {/* Top Right Corner - Dark Mode Switch */}
+          <div className="d-flex justify-content-end align-items-center mb-4">
+            <div className="form-check form-switch">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="darkModeSwitch"
+                checked={darkMode}
+                onChange={toggleDarkMode}
+              />
+              <label className="form-check-label ms-2" htmlFor="darkModeSwitch">
+                {darkMode ? 'Dark Mode' : 'Light Mode'}
+              </label>
+            </div>
+          </div>
+
+          {/* Routes */}
           <Routes>
-            {/* Public Routes */}
             <Route path="/" element={<Intro />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-phone" element={<VerifyPhone />} />
-
-            {/* Protected Routes */}
-            <Route
-              path="/home"
-              element={user ? <Home /> : <Login />}
-            />
+            <Route path="/home" element={user ? <Home /> : <Login />} />
           </Routes>
 
-          {/* Toast Notifications */}
           <ToastContainer />
         </div>
-      </Router>
-    </>
+      </div>
+    </Router>
   );
 }
 
 export default App;
+
