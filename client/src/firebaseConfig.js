@@ -5,13 +5,12 @@ import { getFirestore } from 'firebase/firestore'; // Firestore database
 import { getDatabase } from 'firebase/database'; // Real-time database (if needed)
 
 const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-  projectId: 'YOUR_PROJECT_ID',
-  storageBucket: 'YOUR_PROJECT_ID.appspot.com',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-  appId: 'YOUR_APP_ID',
-  measurementId: 'YOUR_MEASUREMENT_ID',
+  apiKey: "AIzaSyAVrPNik0YbEgv9ieupCCMow_lEFhSlBXg",
+  authDomain: "fridgemate2025.firebaseapp.com",
+  projectId: "fridgemate2025",
+  storageBucket: "fridgemate2025.firebasestorage.app",
+  messagingSenderId: "400887067624",
+  appId: "1:400887067624:web:26eaa7f95428f8701e2a5d"
 };
 
 // Initialize Firebase
