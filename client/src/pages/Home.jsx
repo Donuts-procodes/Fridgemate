@@ -1,22 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Container, Row, Col, Card, Badge, Nav } from 'react-bootstrap';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import FoodList from '../components/FoodList';
 import AddFoodForm from '../components/AddFoodForm';
-import Scanner from '../components/Scanner';
 
 const Home = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('inventory');
+  const [userStats, setUserStats] = useState({
+    itemsTracked: 0,
+    expiringSoon: 0,
+    savingsThisMonth: 0
+  });
+
 
   const handleLogout = async () => {
     await signOut(auth);
     navigate('/');
   };
 
- 
   const styles = {
     header: {
       backgroundColor: '#FBE2B3',
@@ -92,19 +96,19 @@ const Home = () => {
       <Row className="mb-4">
         <Col md={4}>
           <div style={styles.statCard}>
-            <h2>12</h2>
+            <h2>{userStats.itemsTracked}</h2>
             <p className="mb-0">Items Tracked</p>
           </div>
         </Col>
         <Col md={4}>
           <div style={styles.statCard}>
-            <h2>3</h2>
+            <h2>{userStats.expiringSoon}</h2>
             <p className="mb-0">Expiring Soon</p>
           </div>
         </Col>
         <Col md={4}>
           <div style={styles.statCard}>
-            <h2>$24</h2>
+            <h2>{userStats.savingsThisMonth}</h2>
             <p className="mb-0">Savings This Month</p>
           </div>
         </Col>

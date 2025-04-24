@@ -4,12 +4,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebaseConfig';
-
 import Intro from './pages/Intro';
-import Auth from './pages/Auth';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import VerifyPhone from './pages/VerifyPhone';
 import Home from './pages/Home';
 
 function App() {
@@ -60,7 +57,6 @@ function App() {
             <Route path="/" element={<Intro />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/verify-phone" element={<VerifyPhone />} />
             <Route path="/home" element={user ? <Home /> : <Login />} />
           </Routes>
 

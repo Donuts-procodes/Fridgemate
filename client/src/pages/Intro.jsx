@@ -30,7 +30,7 @@ const Intro = () => {
             <p className="lead text-muted mb-4">
               Effortlessly track your food inventory and fight waste. Let FridgeMate be your smart kitchen companion.
             </p>
-            <Link to="/auth">
+            <Link to="/register">
               <Button variant="success" size="lg" className="px-4 py-2">
                 🚀 Get Started
               </Button>

@@ -3,20 +3,32 @@ import { firestore } from '../firebaseConfig';
 import { addDoc, collection } from 'firebase/firestore';
 import { auth } from '../firebaseConfig';
 import { toast } from 'react-toastify';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Spinner } from 'react-bootstrap';
 
 const AddFoodForm = () => {
   const [item, setItem] = useState({ name: '', mfg: '', exp: '' });
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation for manufacture and expiry date
+    if (new Date(item.mfg) > new Date(item.exp)) {
+      toast.error('Expiry date cannot be earlier than manufacture date!');
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const uid = auth.currentUser.uid;
       await addDoc(collection(firestore, `users/${uid}/foods`), item);
-      toast.success("Food added!");
+      toast.success('Food added successfully!');
       setItem({ name: '', mfg: '', exp: '' });
     } catch (err) {
-      toast.error("Error adding food: " + err.message);
+      toast.error('Error adding food: ' + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,7 +61,9 @@ const AddFoodForm = () => {
           required
         />
       </Form.Group>
-      <Button type="submit" variant="success">Add Food</Button>
+      <Button type="submit" variant="success" disabled={loading}>
+        {loading ? <Spinner as="span" animation="border" size="sm" /> : 'Add Food'}
+      </Button>
     </Form>
   );
 };
