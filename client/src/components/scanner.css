@@ -1,0 +1,29 @@
+#scanner {
+	border: 2px solid #198754;
+	position: relative;
+	border-radius: 10px;
+  }
+  
+  .corner-marker::before,
+  .corner-marker::after {
+	content: "";
+	position: absolute;
+	border: 4px solid #0f5132;
+	width: 30px;
+	height: 30px;
+  }
+  
+  .corner-marker::before {
+	top: 0;
+	left: 0;
+	border-right: none;
+	border-bottom: none;
+  }
+  
+  .corner-marker::after {
+	bottom: 0;
+	right: 0;
+	border-left: none;
+	border-top: none;
+  }
+  

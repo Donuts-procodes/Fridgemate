@@ -1,78 +1,65 @@
+import './styles.css';
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { onAuthStateChanged } from 'firebase/auth'; // Firebase Authentication
-import { auth } from './firebaseConfig'; // Assuming you have firebaseConfig.js set up
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebaseConfig';
+import './styles.css';
+import ForgotPassword from './pages/ForgotPassword';
 
-// Importing components for different pages
+
+
+// Pages
 import Intro from './pages/Intro';
-import Auth from './pages/Auth';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import VerifyPhone from './pages/VerifyPhone';
 import Home from './pages/Home';
 
-function App() {
+const AppContent = () => {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-  // Listen for authentication state change
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user); // Set user if logged in
-      } else {
-        setUser(null); // Reset user if logged out
-      }
+      setUser(user || null);
     });
     return () => unsubscribe();
   }, []);
 
   return (
-    <>
-      <Router>
-        <div>
-          <nav>
-            <ul>
-              {!user ? (
-                <>
-                  <li>
-                    <Link to="/">Intro</Link>
-                  </li>
-                  <li>
-                    <Link to="/login">Login</Link>
-                  </li>
-                  <li>
-                    <Link to="/register">Register</Link>
-                  </li>
-                </>
-              ) : (
-                <li>
-                  <Link to="/home">Home</Link>
-                </li>
-              )}
-            </ul>
-          </nav>
+    <div className="body text-center p-4">
+      <Routes>
+        <Route path="/" element={
+          <>
+            <Intro />
+            {!user ? (
+              <div className="mt-4">
+                <button className="btn btn-primary m-2" onClick={() => navigate('/login')}>Login</button>
+                <button className="btn btn-success m-2" onClick={() => navigate('/register')}>Register</button>
+              </div>
+            ) : (
+              <div className="mt-4">
+                <button className="btn btn-info" onClick={() => navigate('/home')}>Go to Home</button>
+              </div>
+            )}
+          </>
+        } />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/home" element={user ? <Home /> : <Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+      </Routes>
+      <ToastContainer />
+    </div>
+  );
+};
 
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Intro />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/verify-phone" element={<VerifyPhone />} />
-
-            {/* Protected Routes */}
-            <Route
-              path="/home"
-              element={user ? <Home /> : <Login />}
-            />
-          </Routes>
-
-          {/* Toast Notifications */}
-          <ToastContainer />
-        </div>
-      </Router>
-    </>
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 

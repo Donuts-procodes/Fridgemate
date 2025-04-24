@@ -15,7 +15,7 @@ const Register = () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       toast.success('Registration successful!');
-      navigate('/verify-phone'); // Redirect to phone verification after registration
+      navigate('/home'); // Redirect to phone verification after registration
     } catch (error) {
       toast.error(error.message);
     }
@@ -26,7 +26,7 @@ const Register = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       toast.success('Registration successful!');
-      navigate('/verify-phone'); // Redirect to phone verification after Google signup
+      navigate('/home'); // Redirect to phone verification after Google signup
     } catch (error) {
       toast.error(error.message);
     }

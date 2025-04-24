@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { auth, googleProvider } from '../firebaseConfig';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState } from "react";
+import { auth, googleProvider } from "../firebaseConfig";
+import { signInWithEmailAndPassword, signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      toast.success('Login successful!');
-      navigate('/home'); // Redirect to home page after successful login
+      toast.success("Login successful!");
+      navigate("/home");
     } catch (error) {
       toast.error(error.message);
     }
@@ -23,18 +23,9 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      toast.success('Login successful!');
-      navigate('/home'); // Redirect to home page after Google login
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
-
-  const handleForgotPassword = async () => {
-    try {
-      await auth.sendPasswordResetEmail(email);
-      toast.success('Password reset email sent!');
+      await signInWithPopup(auth, googleProvider);
+      toast.success("Login successful!");
+      navigate("/home");
     } catch (error) {
       toast.error(error.message);
     }
@@ -60,19 +51,19 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit" className="btn btn-primary mt-3">
+        <button type="submit" className="btn btn-primary mt-3 w-100">
           Login
         </button>
       </form>
 
-      <button onClick={handleGoogleLogin} className="btn btn-danger mt-3">
+      <button onClick={handleGoogleLogin} className="btn btn-danger mt-3 w-100">
         Login with Google
       </button>
 
-      <div className="mt-3">
-        <button onClick={handleForgotPassword} className="btn btn-link">
+      <div className="text-center mt-3">
+        <Link to="/forgot-password" className="btn btn-link">
           Forgot Password?
-        </button>
+        </Link>
       </div>
     </div>
   );
