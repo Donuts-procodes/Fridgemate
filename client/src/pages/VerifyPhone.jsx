@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { auth } from '../firebaseConfig';
-import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,22 +13,25 @@ const VerifyPhone = () => {
   const navigate = useNavigate();
 
   const setupRecaptcha = () => {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      'recaptcha-container',
-      {
-        size: 'invisible',
-        callback: (response) => {
-          // Recaptcha solved
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        'recaptcha-container',
+        {
+          size: 'invisible',
+          callback: (response) => {
+            // reCAPTCHA solved
+          },
         },
-      },
-      auth
-    );
+        auth
+      );
+    }
   };
 
   const handlePhoneNumberSubmit = async (e) => {
     e.preventDefault();
     setupRecaptcha();
     const appVerifier = window.recaptchaVerifier;
+
     try {
       const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       setVerificationId(confirmationResult.verificationId);
@@ -42,48 +45,63 @@ const VerifyPhone = () => {
   const handleVerificationSubmit = async (e) => {
     e.preventDefault();
     try {
-      const credential = auth.PhoneAuthProvider.credential(verificationId, verificationCode);
-      await auth.signInWithCredential(credential);
+      const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
+      await signInWithCredential(auth, credential);
       toast.success('Phone number verified!');
-      navigate('/home'); // Redirect to home page after successful phone number verification
+      navigate('/home');
     } catch (error) {
       toast.error(error.message);
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Phone Number Verification</h2>
-      {!isCodeSent ? (
-        <form onSubmit={handlePhoneNumberSubmit} className="form-group">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter phone number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            required
-          />
-          <div id="recaptcha-container"></div>
-          <button type="submit" className="btn btn-primary mt-3">
-            Send Verification Code
-          </button>
-        </form>
-      ) : (
-        <form onSubmit={handleVerificationSubmit} className="form-group">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Enter verification code"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-            required
-          />
-          <button type="submit" className="btn btn-primary mt-3">
-            Verify Phone Number
-          </button>
-        </form>
-      )}
+    <div className="container d-flex justify-content-center align-items-center min-vh-100">
+      <div className="col-md-6 col-lg-5">
+        <div className="card shadow-lg border-0 rounded-4 p-4">
+          <div className="card-body">
+            <h2 className="card-title text-center mb-4">Phone Verification</h2>
+
+            {!isCodeSent ? (
+              <form onSubmit={handlePhoneNumberSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="phone" className="form-label">Phone Number</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    className="form-control"
+                    placeholder="+1234567890"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                  />
+                </div>
+                <div id="recaptcha-container"></div>
+                <button type="submit" className="btn btn-primary w-100">
+                  Send Verification Code
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerificationSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="code" className="form-label">Verification Code</label>
+                  <input
+                    type="text"
+                    id="code"
+                    className="form-control"
+                    placeholder="Enter the code"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn btn-success w-100">
+                  Verify Phone Number
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
